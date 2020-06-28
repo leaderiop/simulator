@@ -6,4 +6,5 @@ export interface CitizenView {
   speed_x?: number;
   speed_y?: number;
   contaminated: boolean;
+  hasMask: boolean;
 }

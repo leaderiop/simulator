@@ -29,6 +29,7 @@ export class SimulatorComponent
     numberOfCitizens: new FormControl(100),
     contaminatedRatio: new FormControl(0.1),
     contaminationRatio: new FormControl(0.01),
+    maskRatio: new FormControl(0.01),
   });
   constructor(
     private readonly simulatorService: SimulatorService,

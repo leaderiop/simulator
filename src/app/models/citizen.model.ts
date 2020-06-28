@@ -22,8 +22,9 @@ export class Citizen {
   constructor(
     private readonly width: number,
     private readonly height: number,
-    info: CitizenView
+    private readonly info: CitizenView
   ) {
+    console.log(info);
     this.id = info.id;
     this.contaminated = info.contaminated;
     this.contaminationRatio = info.contaminationRatio
@@ -48,6 +49,7 @@ export class Citizen {
     return {
       position: this.position,
       contaminated: this.contaminated,
+      hasMask: this.info.hasMask,
     };
   }
   isContaminated() {
@@ -65,6 +67,9 @@ export class Citizen {
     };
   }
   contaminate(citizen: Citizen) {
+    if (citizen.getLog().hasMask) {
+      return;
+    }
     let x = this.position.x - citizen.position.x;
     let y = this.position.y - citizen.position.y;
     let distance = Math.sqrt(x * x + y * y);

@@ -19,13 +19,21 @@ export class Screen {
   }
   show(arr) {
     arr.forEach((element) => {
-      this.p.stroke(255);
       if (element.contaminated) {
         this.p.fill(255, 0, 0);
-        this.p.stroke(255, 0, 0);
       } else {
-        this.p.stroke(0, 255, 0);
         this.p.fill(0, 255, 0);
+      }
+      if (element.hasMask) {
+        console.log("he has mask");
+        this.p.fill(0, 0, 255);
+        this.p.stroke(0, 0, 255);
+      } else {
+        if (element.contaminated) {
+          this.p.stroke(255, 0, 0);
+        } else {
+          this.p.stroke(0, 255, 0);
+        }
       }
       this.p.circle(element.position.x, element.position.y, 5);
     });
@@ -57,6 +65,7 @@ export class Screen {
     if (color == "danger") this.p.fill("rgba(255,0,0, 0.2)");
     this.p.circle(position.x, position.y, d);
   }
+
   clear() {
     this.p.clear();
     this.p.background(10);

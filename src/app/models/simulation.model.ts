@@ -20,12 +20,14 @@ export class Simulation {
     this.contaminations = [];
     this.screen.clear();
     let { x, y } = this.screen.getDimension();
+    console.log(input);
     this.citizens = [...Array(input.numberOfCitizens).keys()].map(
       (id) =>
         new Citizen(x, y, {
           id: id,
           contaminated: Math.random() < input.contaminatedRatio,
           contaminationRatio: input.contaminationRatio,
+          hasMask: Math.random() < input.maskRatio,
         })
     );
   }

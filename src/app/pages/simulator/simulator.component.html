@@ -65,6 +65,7 @@
           placeholder="Number Of Citizens"
           value="100"
         />
+        <mat-hint>Number Of Citizens</mat-hint>
       </mat-form-field>
       <mat-form-field [style]="{ width: '100%' }">
         <mat-label>Ratio Of Contaminated Citizens</mat-label>
@@ -77,6 +78,7 @@
           formControlName="contaminatedRatio"
           placeholder="Ratio Of Contaminated Citizens"
         />
+        <mat-hint>Ratio Of Contaminated Citizens</mat-hint>
       </mat-form-field>
       <mat-form-field [style]="{ width: '100%' }">
         <mat-label>Ratio Of Contamination</mat-label>
@@ -89,6 +91,20 @@
           formControlName="contaminationRatio"
           placeholder="Ratio Of Contamination"
         />
+        <mat-hint>Ratio Of Contamination</mat-hint>
+      </mat-form-field>
+      <mat-form-field [style]="{ width: '100%' }">
+        <mat-label>Ratio of Wearing Mask Population</mat-label>
+        <input
+          type="number"
+          max="1"
+          min="0"
+          step="0.01"
+          matInput
+          formControlName="maskRatio"
+          placeholder="Ratio of Wearing Mask Population"
+        />
+        <mat-hint>Ratio of Wearing Mask Population</mat-hint>
       </mat-form-field>
     </form>
     <div class="ui-12">
