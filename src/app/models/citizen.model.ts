@@ -34,8 +34,11 @@ export class Citizen {
       Math.floor(Math.random() * this.width),
       Math.floor(Math.random() * this.height)
     );
+    this.speed.set(Math.random(), Math.random());
   }
   move() {
+    this.linearMove();
+    return;
     this.speed.set(
       this.speed_scale(this.perlin.getValue(this.speed_x_off)),
       this.speed_scale(this.perlin.getValue(this.speed_y_off))
@@ -43,6 +46,11 @@ export class Citizen {
     this.speed_x_off += Math.random() * 0.01;
     this.speed_y_off += Math.random() * 0.01;
 
+    this.position.add(this.speed);
+  }
+  linearMove() {
+    if (Math.random() < 0.01) this.speed.rotate(Math.random() * 360);
+    this.speed.setMag(2);
     this.position.add(this.speed);
   }
   getLog() {
@@ -56,6 +64,9 @@ export class Citizen {
     return this.contaminated;
   }
 
+  bounce() {
+    this.speed.rotate(180);
+  }
   getNeighbors(quadtree: Quadtree): NeighborsView {
     return {
       citizen: this,

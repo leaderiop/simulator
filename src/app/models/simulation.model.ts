@@ -42,7 +42,7 @@ export class Simulation {
     });
     quadtree.draw(this.screen);
     this.citizens.map((citizen) => citizen.move());
-
+    this.bounce();
     let input = this.citizens.map((citizen) => citizen.getLog());
 
     let neighbors = this.citizens.map((citizen) =>
@@ -132,5 +132,21 @@ export class Simulation {
   }
   getContaminations() {
     return this.contaminations;
+  }
+  bounce() {
+    let { x, y } = this.screen.getDimension();
+    this.citizens
+      .filter((citizen) => {
+        let position = citizen.getLog().position;
+        if (
+          position.x < 0 ||
+          position.y < 0 ||
+          position.x > x ||
+          position.y > y
+        ) {
+          return true;
+        } else return false;
+      })
+      .map((citizen) => citizen.bounce());
   }
 }
