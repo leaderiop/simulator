@@ -1,18 +1,42 @@
 .screen {
-  background-color: black;
-  box-sizing: content-box;
-  width: 100%;
-  height: 100%;
+    background-color: black;
+    box-sizing: content-box;
+    width: 100%;
+    height: 100%;
 }
+
 .container {
-  height: 100%;
+    height: 100%;
 }
+
 button,
 mat-icon {
-  cursor: pointer;
+    cursor: pointer;
 }
+
 canvas {
-  display: block;
-  margin-left: auto;
-  margin-top: auto;
+    display: block;
+    margin-left: auto;
+    margin-top: auto;
+}
+
+table {
+    width: 100%;
+    table-layout: fixed;
+}
+
+.mat-elevation-z8 {
+    margin: 25px 25px;
+}
+
+mat-form-field {
+    margin-right: 30px;
+}
+
+mat-header-cell {
+    color: rgba(0, 0, 0, .8) !important;
+}
+
+.mat-header-cell {
+    font-size: 16px !important;
 }

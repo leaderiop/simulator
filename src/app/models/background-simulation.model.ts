@@ -5,13 +5,14 @@ import { ContactView } from "./views/contact.view";
 import { NeighborsView } from "./views/neighbors.view";
 import { ContaminationView } from "./views/contamination.view";
 export class BackgroundSimulation {
+  public input;
   private citizens: Citizen[] = [];
-  private currentFrame = 0;
-  private numberOfTotalFrames = 100;
+  public currentFrame = 0;
+  public numberOfTotalFrames = 100;
   private contacts: ContactView[] = [];
   private contaminations: ContaminationView[] = [];
-  private status: "running" | "paused" | "finished" = "paused";
-  constructor(private readonly dimension: { x: number; y: number }) {}
+  public status: "running" | "paused" | "finished" = "paused";
+  constructor(public readonly dimension: { x: number; y: number }) {}
 
   isFinished() {
     return this.currentFrame > this.numberOfTotalFrames;
@@ -20,6 +21,7 @@ export class BackgroundSimulation {
     return this.dimension;
   }
   createPopulation(input) {
+    this.input=input
     this.contacts = [];
     this.contaminations = [];
     let { x, y } = this.getDimension();
@@ -75,6 +77,7 @@ export class BackgroundSimulation {
       console.log("frame : ", this.currentFrame);
       if (this.isFinished()) {
         this.status = "finished";
+        this.pause()
       }
     }
   }
