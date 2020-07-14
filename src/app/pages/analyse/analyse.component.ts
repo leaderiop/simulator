@@ -13,8 +13,6 @@ import { Simulation } from "src/app/models/simulation.model";
 import { CsvService } from "src/app/services/csv.service";
 import { BackgroundSimulation } from "src/app/models/background-simulation.model";
 
-
-
 @Component({
   selector: "app-analyse",
   templateUrl: "./analyse.component.html",
@@ -45,16 +43,24 @@ export class AnalyseComponent {
     return <FormControl>this.backgroundsimulationForm.get("numberOfCitizens");
   }
   get contaminatedRatioMin(): FormControl {
-    return <FormControl>this.backgroundsimulationForm.get("contaminatedRatioMin");
+    return <FormControl>(
+      this.backgroundsimulationForm.get("contaminatedRatioMin")
+    );
   }
   get contaminatedRatioMax(): FormControl {
-    return <FormControl>this.backgroundsimulationForm.get("contaminatedRatioMax");
+    return <FormControl>(
+      this.backgroundsimulationForm.get("contaminatedRatioMax")
+    );
   }
   get contaminationRatioMin(): FormControl {
-    return <FormControl>this.backgroundsimulationForm.get("contaminationRatioMin");
+    return <FormControl>(
+      this.backgroundsimulationForm.get("contaminationRatioMin")
+    );
   }
   get contaminationRatioMax(): FormControl {
-    return <FormControl>this.backgroundsimulationForm.get("contaminationRatioMax");
+    return <FormControl>(
+      this.backgroundsimulationForm.get("contaminationRatioMax")
+    );
   }
   get maskRatioMin(): FormControl {
     return <FormControl>this.backgroundsimulationForm.get("maskRatioMin");
@@ -75,13 +81,24 @@ export class AnalyseComponent {
   }
   runTest() {
     this.createNewSimulationDialog = false;
-    for (let i = this.contaminatedRatioMin.value*100; i < this.contaminatedRatioMax.value*100; i+=10) {
-      for (let j = this.contaminationRatioMin.value*100; j < this.contaminationRatioMax.value*100; j+=10) {
-        for (let k = this.maskRatioMin.value*100; k < this.maskRatioMax.value*100; k +=10) {
-
-          this.simulationInput.contaminatedRatio = i /100;
-          this.simulationInput.contaminationRatio = j/100 ;
-          this.simulationInput.maskRatio = k/100;
+    for (
+      let i = this.contaminatedRatioMin.value * 100;
+      i < this.contaminatedRatioMax.value * 100;
+      i += 10
+    ) {
+      for (
+        let j = this.contaminationRatioMin.value * 100;
+        j < this.contaminationRatioMax.value * 100;
+        j += 10
+      ) {
+        for (
+          let k = this.maskRatioMin.value * 100;
+          k < this.maskRatioMax.value * 100;
+          k += 10
+        ) {
+          this.simulationInput.contaminatedRatio = i / 100;
+          this.simulationInput.contaminationRatio = j / 100;
+          this.simulationInput.maskRatio = k / 100;
           this.createNewSimulation();
         }
       }
@@ -90,22 +107,24 @@ export class AnalyseComponent {
 
   async createNewSimulation() {
     this.createNewSimulationDialog = false;
-    let simulation = this.simulatorService.createBackgroundSimulation(this.simulationInput);
+    let simulation = this.simulatorService.createBackgroundSimulation(
+      this.simulationInput
+    );
     this.simulations.push(simulation);
-    console.log(this.simulations)
-    simulation.play();
-    simulation.setMaxFrames(30000);
-    await new Promise((resolve) => setTimeout(resolve,  1* 60 * 1000));
+    console.log(this.simulations);
+    //simulation.play();
+    //simulation.setMaxFrames(30000);
+    //await new Promise((resolve) => setTimeout(resolve, 1 * 60 * 1000));
   }
 
   pause() {
-    if (!this.paused ) {
+    if (!this.paused) {
       this.paused = true;
     }
   }
 
   play() {
-    if (this.paused ) {
+    if (this.paused) {
       this.paused = false;
     }
   }

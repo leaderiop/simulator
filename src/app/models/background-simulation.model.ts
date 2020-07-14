@@ -21,11 +21,10 @@ export class BackgroundSimulation {
     return this.dimension;
   }
   createPopulation(input) {
-    this.input=input
+    this.input = input;
     this.contacts = [];
     this.contaminations = [];
     let { x, y } = this.getDimension();
-    console.log(input);
     this.citizens = [...Array(input.numberOfCitizens).keys()].map(
       (id) =>
         new Citizen(x, y, {
@@ -74,10 +73,9 @@ export class BackgroundSimulation {
   loop() {
     while (this.status == "running") {
       this.showFrame();
-      console.log("frame : ", this.currentFrame);
       if (this.isFinished()) {
         this.status = "finished";
-        this.pause()
+        this.pause();
       }
     }
   }
