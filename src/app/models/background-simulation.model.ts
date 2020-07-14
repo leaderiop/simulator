@@ -142,6 +142,9 @@ export class BackgroundSimulation {
 
   setMaxFrames(n: number) {
     this.numberOfTotalFrames = n;
+    if (!this.isFinished()) {
+      this.status = "paused";
+    }
   }
   getMaxFrames(): number {
     return this.numberOfTotalFrames;
