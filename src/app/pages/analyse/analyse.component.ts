@@ -22,7 +22,7 @@ export class AnalyseComponent {
   createNewSimulationDialog: boolean = false;
   paused = true;
   items: MenuItem[];
-  simulations: BackgroundSimulation[] = [];
+  simulations: { input: any; simuation: BackgroundSimulation }[] = [];
 
   backgroundsimulationForm = new FormGroup({
     numberOfCitizens: new FormControl(25),
@@ -107,14 +107,13 @@ export class AnalyseComponent {
 
   async createNewSimulation() {
     this.createNewSimulationDialog = false;
-    let simulation = this.simulatorService.createBackgroundSimulation(
-      this.simulationInput
-    );
-    this.simulations.push(simulation);
+    this.simulations.push({
+      input: this.simulationInput,
+      simuation: this.simulatorService.createBackgroundSimulation(
+        this.simulationInput
+      ),
+    });
     console.log(this.simulations);
-    //simulation.play();
-    //simulation.setMaxFrames(30000);
-    //await new Promise((resolve) => setTimeout(resolve, 1 * 60 * 1000));
   }
 
   pause() {
