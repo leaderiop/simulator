@@ -24,7 +24,6 @@ export class Citizen {
     private readonly height: number,
     private readonly info: CitizenView
   ) {
-    console.log(info);
     this.id = info.id;
     this.contaminated = info.contaminated;
     this.contaminationRatio = info.contaminationRatio

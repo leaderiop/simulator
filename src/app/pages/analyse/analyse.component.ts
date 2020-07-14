@@ -12,6 +12,7 @@ import { SimulatorService } from "src/app/services/simulator.service";
 import { Simulation } from "src/app/models/simulation.model";
 import { CsvService } from "src/app/services/csv.service";
 import { BackgroundSimulation } from "src/app/models/background-simulation.model";
+import { SimulationInput } from "src/app/models/views/simulation.input";
 
 @Component({
   selector: "app-analyse",
@@ -33,12 +34,7 @@ export class AnalyseComponent {
     maskRatioMin: new FormControl(0),
     maskRatioMax: new FormControl(1),
   });
-  simulationInput = {
-    numberOfCitizens: this.numberOfCitizens.value,
-    contaminatedRatio: 0.1,
-    contaminationRatio: 0.1,
-    maskRatio: 0.1,
-  };
+
   get numberOfCitizens(): FormControl {
     return <FormControl>this.backgroundsimulationForm.get("numberOfCitizens");
   }
@@ -79,7 +75,7 @@ export class AnalyseComponent {
   showNewSimulationPopup() {
     this.createNewSimulationDialog = true;
   }
-  runTest() {
+  createTest() {
     this.createNewSimulationDialog = false;
     for (
       let i = this.contaminatedRatioMin.value * 100;
@@ -96,24 +92,29 @@ export class AnalyseComponent {
           k < this.maskRatioMax.value * 100;
           k += 10
         ) {
-          this.simulationInput.contaminatedRatio = i / 100;
-          this.simulationInput.contaminationRatio = j / 100;
-          this.simulationInput.maskRatio = k / 100;
-          this.createNewSimulation();
+          let simulationInput: SimulationInput = {
+            contaminatedRatio: i / 100,
+            contaminationRatio: j / 100,
+            maskRatio: k / 100,
+            numberOfCitizens: this.numberOfCitizens.value,
+          };
+
+          this.createNewSimulation(simulationInput);
         }
       }
     }
+
+    console.log(this.simulations);
   }
 
-  async createNewSimulation() {
+  async createNewSimulation(simulationInput: SimulationInput) {
     this.createNewSimulationDialog = false;
     this.simulations.push({
-      input: this.simulationInput,
+      input: simulationInput,
       simuation: this.simulatorService.createBackgroundSimulation(
-        this.simulationInput
+        simulationInput
       ),
     });
-    console.log(this.simulations);
   }
 
   pause() {
