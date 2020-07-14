@@ -79,7 +79,7 @@ export class BackgroundSimulation {
     }
   }
   pause() {
-    this.status = "paused";
+    if (!this.isFinished()) this.status = "paused";
   }
 
   private contaminate(neighbors: NeighborsView[]): ContaminationView[] {
