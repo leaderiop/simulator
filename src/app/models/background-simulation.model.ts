@@ -1,4 +1,3 @@
-import { Screen } from "./screen.model";
 import { Citizen } from "./citizen.model";
 import { Quadtree } from "./quadtree.model";
 import { ContactView } from "./views/contact.view";
@@ -8,8 +7,7 @@ export class BackgroundSimulation {
   public input;
   private citizens: Citizen[] = [];
   public currentFrame = 0;
-  public numberOfTotalFrames = 3000;
-  private contacts: ContactView[] = [];
+  public numberOfTotalFrames = 30000;
   private contaminations: ContaminationView[] = [];
   public status: "running" | "paused" | "finished" = "paused";
   constructor(public readonly dimension: { x: number; y: number }) {}
@@ -22,7 +20,6 @@ export class BackgroundSimulation {
   }
   createPopulation(input) {
     this.input = input;
-    this.contacts = [];
     this.contaminations = [];
     let { x, y } = this.getDimension();
     this.citizens = [...Array(input.numberOfCitizens).keys()].map(
@@ -55,13 +52,8 @@ export class BackgroundSimulation {
       ...this.contaminations,
       ...this.contaminate(neighbors),
     ];
-    this.contacts = [...this.contacts, ...this.getFrameContacts(neighbors)];
 
     this.currentFrame++;
-  }
-
-  private getContaminated() {
-    return this.citizens.filter((citizen) => citizen.isContaminated());
   }
 
   play() {
@@ -118,9 +110,7 @@ export class BackgroundSimulation {
 
     return cont.reduce((acc, tmp) => [...acc, ...tmp], []);
   }
-  getContacts() {
-    return this.contacts;
-  }
+
   getContaminations() {
     return this.contaminations;
   }
