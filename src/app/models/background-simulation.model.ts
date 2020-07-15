@@ -3,13 +3,14 @@ import { Quadtree } from "./quadtree.model";
 import { ContactView } from "./views/contact.view";
 import { NeighborsView } from "./views/neighbors.view";
 import { ContaminationView } from "./views/contamination.view";
+
 export class BackgroundSimulation {
   public input;
   private citizens: Citizen[] = [];
   public currentFrame = 0;
   public numberOfTotalFrames = 30000;
   private contaminations: ContaminationView[] = [];
-  public status: "running" | "paused" | "finished" = "paused";
+  public status: "running" | "paused" | "finished"="paused";
   constructor(public readonly dimension: { x: number; y: number }) {}
 
   isFinished() {
@@ -31,6 +32,10 @@ export class BackgroundSimulation {
           hasMask: Math.random() < input.maskRatio,
         })
     );
+  }
+
+  public getContaminated() {
+    return this.citizens.filter((citizen) => citizen.isContaminated());
   }
   private showFrame() {
     let { x, y } = this.getDimension();
@@ -67,10 +72,13 @@ export class BackgroundSimulation {
       this.showFrame();
       if (this.isFinished()) {
         this.status = "finished";
+
         this.pause();
       }
     }
   }
+
+
   pause() {
     if (!this.isFinished()) this.status = "paused";
   }

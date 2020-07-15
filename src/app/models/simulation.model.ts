@@ -68,7 +68,7 @@ export class Simulation {
     this.showFrame();
   }
 
-  private getContaminated() {
+  public getContaminated() {
     return this.citizens.filter((citizen) => citizen.isContaminated());
   }
 

@@ -11,51 +11,70 @@
         </mat-toolbar-row>
     </mat-toolbar>
 
-    <div class="mat-elevation-z8">
-        <mat-table [dataSource]="dataSource" mat-table>
-            <ng-container matColumnDef="no" width="20%">
-                <mat-header-cell *matHeaderCellDef>No.</mat-header-cell>
-                <mat-cell *matCellDef="let row; let i = index">{{ i + 1 }}</mat-cell>
-            </ng-container>
+    <mat-table [dataSource]="dataSource">
+        <ng-container matColumnDef="no">
+            <mat-header-cell *matHeaderCellDef>No.</mat-header-cell>
+            <mat-cell *matCellDef="let row;">{{row.id+1}}</mat-cell>
+        </ng-container>
 
-            <ng-container matColumnDef="input" width="20%">
-                <mat-header-cell *matHeaderCellDef>Input</mat-header-cell>
-                <mat-cell *matCellDef="let row">
-                    <ul>
-                        <li>Number of Citizens: {{ row.input.numberOfCitizens }}</li>
-                        <li>Contaminated Ratio: {{ row.input.contaminatedRatio }}</li>
-                        <li>Contamination Ratio: {{ row.input.contaminationRatio }}</li>
-                        <li>Mask Ratio: {{ row.input.maskRatio }}</li>
-                    </ul>
-                </mat-cell>
-            </ng-container>
+        <ng-container matColumnDef="numberOfCitizens" width="20%">
+            <mat-header-cell *matHeaderCellDef>Number of Citizens</mat-header-cell>
+            <mat-cell *matCellDef="let row">
+                {{ row.input.numberOfCitizens }}
+            </mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="contaminatedRatio">
+            <mat-header-cell *matHeaderCellDef>Contaminated Ratio</mat-header-cell>
+            <mat-cell *matCellDef="let row">
+                {{ row.input.contaminatedRatio }}
+            </mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="contaminationdRatio">
+            <mat-header-cell *matHeaderCellDef>Contamination Ratio</mat-header-cell>
+            <mat-cell *matCellDef="let row">
+                {{ row.input.contaminationRatio }}
+            </mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="maskRatio">
+            <mat-header-cell *matHeaderCellDef>Mask Ratio</mat-header-cell>
+            <mat-cell *matCellDef="let row">
+                {{ row.input.maskRatio }}
+            </mat-cell>
+        </ng-container>
 
-            <ng-container matColumnDef="progeress" width="30%">
-                <mat-header-cell *matHeaderCellDef>progeress</mat-header-cell>
-                <mat-cell *matCellDef="let row">
-                    <mat-progress-bar mode="determinate" [value]="(row.simulation.currentFrame/row.simulation.numberOfTotalFrames)*100"></mat-progress-bar>
-                </mat-cell>
-            </ng-container>
 
-            <ng-container matColumnDef="status" width="20%">
-                <mat-header-cell *matHeaderCellDef>status</mat-header-cell>
-                <mat-cell *matCellDef="let row; let i = index">
-                    <button mat-icon-button color="warn" matTooltip="play" (click)="play(i)" *ngIf="row.simulation.status=='paused'">
+        <ng-container matColumnDef="progress">
+            <mat-header-cell *matHeaderCellDef>progress</mat-header-cell>
+            <mat-cell *matCellDef="let row">
+                <mat-progress-bar mode="determinate" [value]="(row.simulation.currentFrame/row.simulation.numberOfTotalFrames)*100"></mat-progress-bar>
+            </mat-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="status">
+            <mat-header-cell *matHeaderCellDef>status</mat-header-cell>
+            <mat-cell *matCellDef="let row;">
+                <button mat-icon-button color="warn" matTooltip="play" (click)="play(row.id)" *ngIf="!row.simulation.isFinished()&&row.simulation.status=='paused'">
         <mat-icon>play_arrow</mat-icon>
       </button>
-                    <button mat-icon-button color="warn" matTooltip="pause" (click)="pause(i)" *ngIf="row.simulation.status!=='paused'">
+                <button mat-icon-button color="warn" matTooltip="pause" (click)="pause(row.id)" *ngIf="!row.simulation.isFinished()&&row.simulation.status!=='paused'">
         <mat-icon>pause</mat-icon> </button>
+                <button mat-icon-button color="warn" matTooltip="done" *ngIf="row.simulation.isFinished()">
+          <mat-icon>done</mat-icon> </button>
 
-                </mat-cell>
-            </ng-container>
+                <button mat-icon-button matTooltip="download" *ngIf="row.simulation.isFinished()" (click)="downloadResult(row.id)">
+              <mat-icon>cloud_download</mat-icon></button>
+            </mat-cell>
 
-            <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-            <mat-row *matRowDef="let row; columns: displayedColumns"></mat-row>
-        </mat-table>
-        <mat-paginator #paginator [length]="dataSource.data.length" [pageIndex]="0" [pageSize]="5" [pageSizeOptions]="[5, 50, 100, 250]">
-        </mat-paginator>
-    </div>
+        </ng-container>
+
+        <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+        <mat-row *matRowDef="let row; columns: displayedColumns"></mat-row>
+    </mat-table>
+    <mat-paginator #paginator [pageSize]="5" [pageSizeOptions]="[5, 50, 100, 250]">
+    </mat-paginator>
 </div>
+
+
 <p-dialog header="New Simulation" [(visible)]="createNewSimulationDialog" [style]="{ width: '400px' }">
     <div class="ui-12">
         <form [formGroup]="backgroundsimulationForm" (submit)="createTest()">
