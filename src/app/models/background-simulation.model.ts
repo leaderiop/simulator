@@ -8,7 +8,7 @@ export class BackgroundSimulation {
   public input;
   private citizens: Citizen[] = [];
   public currentFrame = 0;
-  public numberOfTotalFrames = 100;
+  public numberOfTotalFrames = 3000;
   private contacts: ContactView[] = [];
   private contaminations: ContaminationView[] = [];
   public status: "running" | "paused" | "finished" = "paused";

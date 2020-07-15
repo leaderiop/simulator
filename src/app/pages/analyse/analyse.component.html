@@ -1,176 +1,120 @@
 <div class="container" fxLayout="column" fxLayoutAlign="start stretch">
-  <mat-toolbar color="primary">
-    <mat-toolbar-row fxLayout="row" fxLayoutAlign="space-between center">
-      <span>Moroccovid Simulator</span>
+    <mat-toolbar color="primary">
+        <mat-toolbar-row fxLayout="row" fxLayoutAlign="space-between center">
+            <span>Moroccovid Simulator</span>
 
-      <div class="utilities">
-        <button
-          (click)="showNewSimulationPopup()"
-          mat-icon-button
-          matTooltip="new Simulation"
-        >
+            <div class="utilities">
+                <button (click)="showNewSimulationPopup()" mat-icon-button matTooltip="new Simulation">
           <mat-icon>add</mat-icon>
         </button>
-      </div>
-    </mat-toolbar-row>
-  </mat-toolbar>
+            </div>
+        </mat-toolbar-row>
+    </mat-toolbar>
 
-  <div class="mat-elevation-z8">
-    <table [dataSource]="dataSource" mat-table>
-      <ng-container matColumnDef="no" width="20%">
-        <th mat-header-cell *matHeaderCellDef>No.</th>
-        <td mat-cell *matCellDef="let row; let i = index">{{ i + 1 }}</td>
-      </ng-container>
+    <div class="mat-elevation-z8">
+        <mat-table [dataSource]="dataSource" mat-table>
+            <ng-container matColumnDef="no" width="20%">
+                <mat-header-cell *matHeaderCellDef>No.</mat-header-cell>
+                <mat-cell *matCellDef="let row; let i = index">{{ i + 1 }}</mat-cell>
+            </ng-container>
 
-      <ng-container matColumnDef="input" width="20%">
-        <th mat-header-cell *matHeaderCellDef>Input</th>
-        <td mat-cell *matCellDef="let element">{{ element.input }}</td>
-      </ng-container>
+            <ng-container matColumnDef="input" width="20%">
+                <mat-header-cell *matHeaderCellDef>Input</mat-header-cell>
+                <mat-cell *matCellDef="let row">
+                    <ul>
+                        <li>Number of Citizens: {{ row.input.numberOfCitizens }}</li>
+                        <li>Contaminated Ratio: {{ row.input.contaminatedRatio }}</li>
+                        <li>Contamination Ratio: {{ row.input.contaminationRatio }}</li>
+                        <li>Mask Ratio: {{ row.input.maskRatio }}</li>
+                    </ul>
+                </mat-cell>
+            </ng-container>
 
-      <ng-container matColumnDef="progeress" width="30%">
-        <th mat-header-cell *matHeaderCellDef>progeress</th>
-        <td mat-cell *matCellDef="let row">
-          <mat-progress-bar
-            mode="determinate"
-            [value]="row.progress"
-          ></mat-progress-bar>
-        </td>
-      </ng-container>
+            <ng-container matColumnDef="progeress" width="30%">
+                <mat-header-cell *matHeaderCellDef>progeress</mat-header-cell>
+                <mat-cell *matCellDef="let row">
+                    <mat-progress-bar mode="determinate" [value]="(row.simulation.currentFrame/row.simulation.numberOfTotalFrames)*100"></mat-progress-bar>
+                </mat-cell>
+            </ng-container>
 
-      <ng-container matColumnDef="status" width="20%">
-        <th mat-header-cell *matHeaderCellDef>status</th>
-        <td mat-cell *matCellDef="let element">
-          <button
-            mat-icon-button
-            color="warn"
-            matTooltip="play"
-            (click)="play()"
-            *ngIf="this.paused"
-          >
-            <mat-icon>play_arrow</mat-icon>
-          </button>
-          <button
-            mat-icon-button
-            color="warn"
-            matTooltip="pause"
-            (click)="pause()"
-            *ngIf="!this.paused"
-          >
-            <mat-icon>pause</mat-icon>
-          </button>
-        </td>
-      </ng-container>
+            <ng-container matColumnDef="status" width="20%">
+                <mat-header-cell *matHeaderCellDef>status</mat-header-cell>
+                <mat-cell *matCellDef="let row; let i = index">
+                    <button mat-icon-button color="warn" matTooltip="play" (click)="play(i)" *ngIf="row.simulation.status=='paused'">
+        <mat-icon>play_arrow</mat-icon>
+      </button>
+                    <button mat-icon-button color="warn" matTooltip="pause" (click)="pause(i)" *ngIf="row.simulation.status!=='paused'">
+        <mat-icon>pause</mat-icon> </button>
 
-      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-      <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
-    </table>
-  </div>
+                </mat-cell>
+            </ng-container>
+
+            <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+            <mat-row *matRowDef="let row; columns: displayedColumns"></mat-row>
+        </mat-table>
+        <mat-paginator #paginator [length]="dataSource.data.length" [pageIndex]="0" [pageSize]="5" [pageSizeOptions]="[5, 50, 100, 250]">
+        </mat-paginator>
+    </div>
 </div>
-<p-dialog
-  header="New Simulation"
-  [(visible)]="createNewSimulationDialog"
-  [style]="{ width: '400px' }"
->
-  <div class="ui-12">
-    <form [formGroup]="backgroundsimulationForm" (submit)="createTest()">
-      <mat-form-field [style]="{ width: '100%' }">
-        <mat-label>Number Of Citizens</mat-label>
-        <input
-          type="number"
-          matInput
-          formControlName="numberOfCitizens"
-          placeholder="Number Of Citizens"
-          value="100"
-        />
-        <mat-hint>Number Of Citizens</mat-hint>
-      </mat-form-field>
-      <mat-label>Ratio Of Contaminated Citizens</mat-label>
-      <div class="row">
-        <mat-form-field [style]="{ width: '40%' }">
-          <input
-            type="number"
-            max="1"
-            min="0"
-            step="0.05"
-            matInput
-            formControlName="contaminatedRatioMin"
-            placeholder="min"
-          />
-          <mat-hint>min</mat-hint>
-        </mat-form-field>
-        <mat-form-field [style]="{ width: '40%' }">
-          <input
-            type="number"
-            max="1"
-            min="0"
-            step="0.05"
-            matInput
-            formControlName="contaminatedRatioMax"
-            placeholder="max"
-          />
-          <mat-hint>max</mat-hint>
-        </mat-form-field>
-      </div>
-      <mat-label>Ratio Of Contamination</mat-label>
-      <div class="row">
-        <mat-form-field [style]="{ width: '40%' }">
-          <input
-            type="number"
-            max="1"
-            min="0"
-            step="0.05"
-            matInput
-            formControlName="contaminationRatioMin"
-            placeholder="min"
-          />
-          <mat-hint>min</mat-hint>
-        </mat-form-field>
-        <mat-form-field [style]="{ width: '40%' }">
-          <input
-            type="number"
-            max="1"
-            min="0"
-            step="0.05"
-            matInput
-            formControlName="contaminationRatioMax"
-            placeholder="max"
-          />
-          <mat-hint>max</mat-hint>
-        </mat-form-field>
-      </div>
-      <mat-label>Ratio of Wearing Mask Population</mat-label>
-      <div class="row">
-        <mat-form-field [style]="{ width: '40%' }">
-          <input
-            type="number"
-            max="1"
-            min="0"
-            step="0.05"
-            matInput
-            formControlName="maskRatioMin"
-            placeholder="min"
-          />
-          <mat-hint>min</mat-hint>
-        </mat-form-field>
-        <mat-form-field [style]="{ width: '40%' }">
-          <input
-            type="number"
-            max="1"
-            min="0"
-            step="0.05"
-            matInput
-            formControlName="maskRatioMax"
-            placeholder="max"
-          />
-          <mat-hint>max</mat-hint>
-        </mat-form-field>
-      </div>
-    </form>
+<p-dialog header="New Simulation" [(visible)]="createNewSimulationDialog" [style]="{ width: '400px' }">
     <div class="ui-12">
-      <button mat-flat-button color="primary">Reset</button>
-      <button mat-flat-button (click)="createTest()" color="accent">
+        <form [formGroup]="backgroundsimulationForm" (submit)="createTest()">
+            <mat-form-field [style]="{ width: '100%' }">
+                <mat-label>Number Of Citizens</mat-label>
+                <input type="number" matInput formControlName="numberOfCitizens" placeholder="Number Of Citizens" value="100" />
+                <mat-hint>Number Of Citizens</mat-hint>
+            </mat-form-field>
+            <mat-label>Ratio Of Contaminated Citizens</mat-label>
+            <div class="row">
+                <mat-form-field [style]="{ width: '30%' }">
+                    <input type="number" max="1" min="0" step="0.05" matInput formControlName="contaminatedRatioMin" placeholder="min" />
+                    <mat-hint>min</mat-hint>
+                </mat-form-field>
+                <mat-form-field [style]="{ width: '30%' }">
+                    <input type="number" max="1" min="0" step="0.05" matInput formControlName="contaminatedRatioMax" placeholder="max" />
+                    <mat-hint>max</mat-hint>
+                </mat-form-field>
+                <mat-form-field [style]="{ width: '30%' }">
+                    <input type="number" matInput formControlName="contaminatedRatioStep" placeholder="Step" />
+                    <mat-hint>Step</mat-hint>
+                </mat-form-field>
+            </div>
+            <mat-label>Ratio Of Contamination</mat-label>
+            <div class="row">
+                <mat-form-field [style]="{ width: '30%' }">
+                    <input type="number" max="1" min="0" step="0.05" matInput formControlName="contaminationRatioMin" placeholder="min" />
+                    <mat-hint>min</mat-hint>
+                </mat-form-field>
+                <mat-form-field [style]="{ width: '30%' }">
+                    <input type="number" max="1" min="0" step="0.05" matInput formControlName="contaminationRatioMax" placeholder="max" />
+                    <mat-hint>max</mat-hint>
+                </mat-form-field>
+                <mat-form-field [style]="{ width: '30%' }">
+                    <input type="number" matInput formControlName="contaminationRatioStep" placeholder="Step" />
+                    <mat-hint>Step</mat-hint>
+                </mat-form-field>
+            </div>
+            <mat-label>Ratio of Wearing Mask Population</mat-label>
+            <div class="row">
+                <mat-form-field [style]="{ width: '30%' }">
+                    <input type="number" max="1" min="0" step="0.05" matInput formControlName="maskRatioMin" placeholder="min" />
+                    <mat-hint>min</mat-hint>
+                </mat-form-field>
+                <mat-form-field [style]="{ width: '30%' }">
+                    <input type="number" max="1" min="0" step="0.05" matInput formControlName="maskRatioMax" placeholder="max" />
+                    <mat-hint>max</mat-hint>
+                </mat-form-field>
+                <mat-form-field [style]="{ width: '30%' }">
+                    <input type="number" matInput formControlName="maskRatioStep" placeholder="Step" />
+                    <mat-hint>Step</mat-hint>
+                </mat-form-field>
+            </div>
+        </form>
+        <div class="ui-12">
+            <button mat-flat-button color="primary">Reset</button>
+            <button mat-flat-button (click)="createTest()" color="accent">
         Submit
       </button>
+        </div>
     </div>
-  </div>
 </p-dialog>

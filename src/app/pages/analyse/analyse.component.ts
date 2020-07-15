@@ -6,13 +6,15 @@ import {
   ElementRef,
   AfterViewChecked,
 } from "@angular/core";
-import { FormGroup, FormControl } from "@angular/forms";
+import {   FormBuilder,FormGroup, FormControl } from "@angular/forms";
 import { MenuItem } from "primeng";
 import { SimulatorService } from "src/app/services/simulator.service";
 import { Simulation } from "src/app/models/simulation.model";
 import { CsvService } from "src/app/services/csv.service";
 import { BackgroundSimulation } from "src/app/models/background-simulation.model";
 import { SimulationInput } from "src/app/models/views/simulation.input";
+import { MatTableDataSource } from '@angular/material/table';
+import { MatPaginator } from '@angular/material/paginator';
 
 @Component({
   selector: "app-analyse",
@@ -20,56 +22,32 @@ import { SimulationInput } from "src/app/models/views/simulation.input";
   styleUrls: ["./analyse.component.scss"],
 })
 export class AnalyseComponent {
-  createNewSimulationDialog: boolean = false;
-  paused = true;
-  items: MenuItem[];
-  simulations: { input: any; simuation: BackgroundSimulation }[] = [];
+  @ViewChild(MatPaginator) paginator: MatPaginator;
 
-  backgroundsimulationForm = new FormGroup({
-    numberOfCitizens: new FormControl(25),
-    contaminatedRatioMin: new FormControl(0),
-    contaminatedRatioMax: new FormControl(1),
-    contaminationRatioMin: new FormControl(0),
-    contaminationRatioMax: new FormControl(1),
-    maskRatioMin: new FormControl(0),
-    maskRatioMax: new FormControl(1),
+  createNewSimulationDialog: boolean = false;
+  items: MenuItem[];
+  simulations: { input: any; simulation: BackgroundSimulation }[] = [];
+
+  backgroundsimulationForm = this.fb.group({
+    numberOfCitizens: [25],
+    contaminatedRatioMin: [0.1],
+    contaminatedRatioMax: [1],
+    contaminatedRatioStep: [0.1],
+    contaminationRatioMin: [0.1],
+    contaminationRatioMax: [1],
+    contaminationRatioStep: [0.1],
+    maskRatioMin: [0.1],
+    maskRatioMax: [1],
+    maskRatioStep: [0.1],
   });
 
-  get numberOfCitizens(): FormControl {
-    return <FormControl>this.backgroundsimulationForm.get("numberOfCitizens");
-  }
-  get contaminatedRatioMin(): FormControl {
-    return <FormControl>(
-      this.backgroundsimulationForm.get("contaminatedRatioMin")
-    );
-  }
-  get contaminatedRatioMax(): FormControl {
-    return <FormControl>(
-      this.backgroundsimulationForm.get("contaminatedRatioMax")
-    );
-  }
-  get contaminationRatioMin(): FormControl {
-    return <FormControl>(
-      this.backgroundsimulationForm.get("contaminationRatioMin")
-    );
-  }
-  get contaminationRatioMax(): FormControl {
-    return <FormControl>(
-      this.backgroundsimulationForm.get("contaminationRatioMax")
-    );
-  }
-  get maskRatioMin(): FormControl {
-    return <FormControl>this.backgroundsimulationForm.get("maskRatioMin");
-  }
-  get maskRatioMax(): FormControl {
-    return <FormControl>this.backgroundsimulationForm.get("maskRatioMax");
-  }
   displayedColumns: string[] = ["no", "input", "progeress", "status"];
-  dataSource = this.simulations;
+  dataSource = new MatTableDataSource();
 
   constructor(
     private readonly simulatorService: SimulatorService,
-    private readonly csvService: CsvService
+    private readonly csvService: CsvService,
+    private fb: FormBuilder,
   ) {}
 
   showNewSimulationPopup() {
@@ -78,25 +56,25 @@ export class AnalyseComponent {
   createTest() {
     this.createNewSimulationDialog = false;
     for (
-      let i = this.contaminatedRatioMin.value * 100;
-      i < this.contaminatedRatioMax.value * 100;
-      i += 10
+      let i = this.backgroundsimulationForm.controls.contaminatedRatioMin.value ;
+      i < this.backgroundsimulationForm.controls.contaminatedRatioMax.value ;
+      i += this.backgroundsimulationForm.controls.contaminatedRatioStep.value
     ) {
       for (
-        let j = this.contaminationRatioMin.value * 100;
-        j < this.contaminationRatioMax.value * 100;
-        j += 10
+        let j = this.backgroundsimulationForm.controls.contaminationRatioMin.value ;
+        j < this.backgroundsimulationForm.controls.contaminationRatioMax.value ;
+        j += this.backgroundsimulationForm.controls.contaminationRatioStep.value
       ) {
         for (
-          let k = this.maskRatioMin.value * 100;
-          k < this.maskRatioMax.value * 100;
-          k += 10
+          let k = this.backgroundsimulationForm.controls.maskRatioMin.value ;
+          k < this.backgroundsimulationForm.controls.maskRatioMax.value ;
+          k += this.backgroundsimulationForm.controls.maskRatioStep.value
         ) {
           let simulationInput: SimulationInput = {
-            contaminatedRatio: i / 100,
-            contaminationRatio: j / 100,
-            maskRatio: k / 100,
-            numberOfCitizens: this.numberOfCitizens.value,
+            contaminatedRatio: i,
+            contaminationRatio: j ,
+            maskRatio: k ,
+            numberOfCitizens: this.backgroundsimulationForm.controls.numberOfCitizens.value,
           };
 
           this.createNewSimulation(simulationInput);
@@ -107,25 +85,27 @@ export class AnalyseComponent {
     console.log(this.simulations);
   }
 
-  async createNewSimulation(simulationInput: SimulationInput) {
+   createNewSimulation(simulationInput: SimulationInput) {
     this.createNewSimulationDialog = false;
     this.simulations.push({
       input: simulationInput,
-      simuation: this.simulatorService.createBackgroundSimulation(
+      simulation: this.simulatorService.createBackgroundSimulation(
         simulationInput
       ),
     });
+    this.dataSource.data = this.simulations;
   }
 
-  pause() {
-    if (!this.paused) {
-      this.paused = true;
+  pause(index) {
+    if (this.simulations[index].simulation.status!=='paused') {
+      this.simulations[index].simulation.pause();
     }
   }
 
-  play() {
-    if (this.paused) {
-      this.paused = false;
+  play(index) {
+    if ( this.simulations[index].simulation.status=='paused') {
+      this.simulations[index].simulation.play();
     }
+
   }
 }
