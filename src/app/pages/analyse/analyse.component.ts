@@ -108,8 +108,6 @@ export class AnalyseComponent implements OnInit {
 
     console.log(this.simulations);
   }
-
-
   createNewSimulation(simulationInput: SimulationInput) {
     this.createNewSimulationDialog = false;
     this.simulations.push({
@@ -131,14 +129,22 @@ export class AnalyseComponent implements OnInit {
     this.getAllgenerations(index);
   }
 
-  pause(index) {
+   pause(index) {
     if (this.simulations[index].simulation.status !== "paused") {
       this.simulations[index].simulation.pause();
     }
+    console.log(index)
+  }
+  async start(index){
+    await new Promise((resolve) => setTimeout(resolve, 300));
+    if(index<this.simulations.length)
+    this.play(index)
+    return true
   }
   play(index) {
     if (this.simulations[index].simulation.status == "paused") {
       this.simulations[index].simulation.play();
     }
+    console.log(index)
   }
 }

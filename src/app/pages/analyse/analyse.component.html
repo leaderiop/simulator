@@ -58,7 +58,7 @@
       </button>
                 <button mat-icon-button color="warn" matTooltip="pause" (click)="pause(row.id)" *ngIf="!row.simulation.isFinished()&&row.simulation.status!=='paused'">
         <mat-icon>pause</mat-icon> </button>
-                <button mat-icon-button color="warn" matTooltip="done" *ngIf="row.simulation.isFinished()">
+                <button mat-icon-button color="warn" matTooltip="done" *ngIf="row.simulation.isFinished()&&start(row.id+1)">
           <mat-icon>done</mat-icon> </button>
 
                 <button mat-icon-button matTooltip="download" *ngIf="row.simulation.isFinished()" (click)="downloadResult(row.id)">
