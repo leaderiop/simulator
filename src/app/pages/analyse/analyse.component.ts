@@ -12,6 +12,7 @@ import { BackgroundSimulation } from "src/app/models/background-simulation.model
 import { SimulationInput } from "src/app/models/views/simulation.input";
 import { MatTableDataSource } from "@angular/material/table";
 import { MatPaginator } from "@angular/material/paginator";
+import { element } from 'protractor';
 
 @Component({
   selector: "app-analyse",
@@ -119,29 +120,28 @@ export class AnalyseComponent implements OnInit {
   }
   downloadResults() {
     let results = [];
-    for (let i = 0; i < this.simulations.length; i++) {
-      let contaminations = this.simulations[i].simulation.getContaminations();
-      contaminations=contaminations.map
+      this.simulations.forEach((element)=>{
+        let contaminations = element.simulation.getContaminations();
+        contaminations=contaminations.map
         ((c,index) => {
           let contamination = {
             id:index,
             contaminatedId:c.contaminatedId,
             contaminatorId:c.contaminatorId,
             time:c.time,
-            numberOfCitizens: this.simulations[i].input.numberOfCitizens,
-            contaminatedRatio: this.simulations[i].input.contaminatedRatio,
-            contaminationRatio: this.simulations[i].input.contaminationRatio,
-            maskRatio: this.simulations[i].input.maskRatio,
+            numberOfCitizens: element.input.numberOfCitizens,
+            contaminatedRatio: element.input.contaminatedRatio,
+            contaminationRatio: element.input.contaminationRatio,
+            maskRatio: element.input.maskRatio,
           };
-
           return contamination;
         });
         results.push({
-          id:i,
           contaminations:contaminations
         });
-      }
-    console.log(results);
+      })
+      console.log(results);
+
   }
   downloadResult(index) {
     let contaminations = this.simulations[index].simulation.getContaminations();
