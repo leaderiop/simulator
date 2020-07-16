@@ -1,10 +1,7 @@
 import {
   Component,
   OnInit,
-  AfterViewInit,
   ViewChild,
-  ElementRef,
-  AfterViewChecked,
 } from "@angular/core";
 import { FormBuilder, FormGroup, FormControl } from "@angular/forms";
 import { MenuItem } from "primeng";
@@ -23,6 +20,7 @@ import { MatPaginator } from "@angular/material/paginator";
 })
 export class AnalyseComponent implements OnInit {
   @ViewChild(MatPaginator) paginator: MatPaginator;
+  count = 0;
 
   createNewSimulationDialog: boolean = false;
   items: MenuItem[];
@@ -31,7 +29,6 @@ export class AnalyseComponent implements OnInit {
     input: any;
     simulation: BackgroundSimulation;
   }[] = [];
-  result = [];
   backgroundsimulationForm = this.fb.group({
     numberOfCitizens: [25],
     contaminatedRatioMin: [0.1],
@@ -44,7 +41,6 @@ export class AnalyseComponent implements OnInit {
     maskRatioMax: [1],
     maskRatioStep: [0.1],
   });
-
   displayedColumns: string[] = [
     "no",
     "numberOfCitizens",
@@ -119,32 +115,72 @@ export class AnalyseComponent implements OnInit {
     });
     this.dataSource.data = this.simulations;
     this.dataSource.paginator = this.paginator;
+    this.count = this.simulations.length;
   }
-  getAllgenerations(index) {
-    let contaminations = this.simulations[index].simulation.getContaminations();
-    if (contaminations.length > 0)
-      console.log("contaminations", contaminations);
+  downloadResults() {
+    let results = [];
+    for (let i = 0; i < this.simulations.length; i++) {
+      let contaminations = this.simulations[i].simulation.getContaminations();
+      contaminations=contaminations.map
+        ((c,index) => {
+          let contamination = {
+            id:index,
+            contaminatedId:c.contaminatedId,
+            contaminatorId:c.contaminatorId,
+            time:c.time,
+            numberOfCitizens: this.simulations[i].input.numberOfCitizens,
+            contaminatedRatio: this.simulations[i].input.contaminatedRatio,
+            contaminationRatio: this.simulations[i].input.contaminationRatio,
+            maskRatio: this.simulations[i].input.maskRatio,
+          };
+
+          return contamination;
+        });
+        results.push({
+          id:i,
+          contaminations:contaminations
+        });
+      }
+    console.log(results);
   }
   downloadResult(index) {
-    this.getAllgenerations(index);
+    let contaminations = this.simulations[index].simulation.getContaminations();
+    let result = {
+      id: index,
+      numberOfCitizens: this.simulations[index].input.numberOfCitizens,
+      contaminatedRatio: this.simulations[index].input.contaminatedRatio,
+      contaminationdRatio: this.simulations[index].input.contaminationdRatio,
+      maskRatio: this.simulations[index].input.maskRatio,
+      contaminations: contaminations,
+    };
+    console.log(result)
   }
-
-   pause(index) {
+  pause(index) {
     if (this.simulations[index].simulation.status !== "paused") {
       this.simulations[index].simulation.pause();
     }
-    console.log(index)
   }
-  async start(index){
-    await new Promise((resolve) => setTimeout(resolve, 300));
-    if(index<this.simulations.length)
-    this.play(index)
-    return true
+  start(index) {
+    if (this.count > 0) {
+      if (index < this.simulations.length) {
+        this.play(index);
+      }
+      this.isNextPage(index);
+    }
+    return true;
+  }
+  isNextPage(index) {
+    let modulo = index % this.paginator.pageSize;
+    if (!modulo && this.paginator.hasNextPage()) {
+      setTimeout(() => {
+        this.paginator.nextPage();
+      }, 0);
+    }
   }
   play(index) {
     if (this.simulations[index].simulation.status == "paused") {
       this.simulations[index].simulation.play();
+      this.count--;
     }
-    console.log(index)
   }
 }
