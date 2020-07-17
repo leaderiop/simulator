@@ -76,7 +76,7 @@ export class Citizen {
       time: new Date(),
     };
   }
-  contaminate(citizen: Citizen) {
+  contaminate(citizen: Citizen,frame:number) {
     if (citizen.getLog().hasMask) {
       return;
     }
@@ -92,7 +92,7 @@ export class Citizen {
       let contamination: ContaminationView = {
         contaminatedId: this.id,
         contaminatorId: citizen.getId(),
-        time: new Date(),
+        frame: frame,
       };
       return contamination;
     }

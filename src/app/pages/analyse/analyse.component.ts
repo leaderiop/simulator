@@ -128,7 +128,7 @@ export class AnalyseComponent implements OnInit {
             id:index,
             contaminatedId:c.contaminatedId,
             contaminatorId:c.contaminatorId,
-            time:c.time,
+            frame:c.frame,
             numberOfCitizens: element.input.numberOfCitizens,
             contaminatedRatio: element.input.contaminatedRatio,
             contaminationRatio: element.input.contaminationRatio,

@@ -4,6 +4,7 @@ import { Quadtree } from "./quadtree.model";
 import { ContactView } from "./views/contact.view";
 import { NeighborsView } from "./views/neighbors.view";
 import { ContaminationView } from "./views/contamination.view";
+import { element } from 'protractor';
 export class Simulation {
   private citizens: Citizen[] = [];
   private frame = 0;
@@ -51,8 +52,9 @@ export class Simulation {
 
     this.contaminations = [
       ...this.contaminations,
-      ...this.contaminate(neighbors),
-    ];
+      ...this.contaminate(neighbors,this.frame),
+    ]
+
     this.contacts = [...this.contacts, ...this.getFrameContacts(neighbors)];
     neighbors.forEach((n) => {
       if (n.citizen.isContaminated()) {
@@ -92,13 +94,13 @@ export class Simulation {
     this.framesPerSec *= 2;
     this.play();
   }
-  private contaminate(neighbors: NeighborsView[]): ContaminationView[] {
+  private contaminate(neighbors: NeighborsView[],frame): ContaminationView[] {
     return neighbors
       .map((neighbor) => {
         return neighbor.neighbors
           .map((citizen) => {
             if (neighbor.citizen.isContaminated()) {
-              return citizen.contaminate(neighbor.citizen);
+              return citizen.contaminate(neighbor.citizen,frame);
             }
           })
           .filter((c) => c);

@@ -1,5 +1,5 @@
 export interface ContaminationView {
-  time: Date;
+  frame: number;
   contaminatorId: number;
   contaminatedId: number;
 }

@@ -55,7 +55,7 @@ export class BackgroundSimulation {
 
     this.contaminations = [
       ...this.contaminations,
-      ...this.contaminate(neighbors),
+      ...this.contaminate(neighbors,this.currentFrame),
     ];
 
     this.currentFrame++;
@@ -83,13 +83,13 @@ export class BackgroundSimulation {
     if (!this.isFinished()) this.status = "paused";
   }
 
-  private contaminate(neighbors: NeighborsView[]): ContaminationView[] {
+  private contaminate(neighbors: NeighborsView[],frame): ContaminationView[] {
     return neighbors
       .map((neighbor) => {
         return neighbor.neighbors
           .map((citizen) => {
             if (neighbor.citizen.isContaminated()) {
-              return citizen.contaminate(neighbor.citizen);
+              return citizen.contaminate(neighbor.citizen,frame);
             }
           })
           .filter((c) => c);
