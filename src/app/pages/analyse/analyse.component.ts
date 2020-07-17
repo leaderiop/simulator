@@ -125,7 +125,8 @@ export class AnalyseComponent implements OnInit {
         contaminations=contaminations.map
         ((c,index) => {
           let contamination = {
-            id:index,
+            contaminationId:index,
+            inputId:element.id,
             contaminatedId:c.contaminatedId,
             contaminatorId:c.contaminatorId,
             frame:c.frame,
@@ -136,11 +137,16 @@ export class AnalyseComponent implements OnInit {
           };
           return contamination;
         });
-        results.push({
-          contaminations:contaminations
-        });
+        results  =[...results,...contaminations]
+
       })
       console.log(results);
+
+      this.csvService.downloadFile(
+        results,
+        Object.keys(results[0]),
+        "contaminations_" + new Date().toISOString()
+      );
 
   }
   downloadResult(index) {
