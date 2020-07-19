@@ -1,117 +1,65 @@
 <div class="container" fxLayout="column" fxLayoutAlign="start stretch">
-  <mat-toolbar color="primary">
-    <mat-toolbar-row fxLayout="row" fxLayoutAlign="space-between center">
-      <span>Moroccovid Simulator</span>
-      <div class="player" *ngIf="this.simulation">
-        <button mat-icon-button matTooltip="play" (click)="speedDown()">
+    <mat-toolbar color="primary">
+        <mat-toolbar-row fxLayout="row" fxLayoutAlign="space-between center">
+            <span>Moroccovid Simulator</span>
+            <div class="player" *ngIf="this.simulation">
+                <button mat-icon-button matTooltip="play" (click)="speedDown()">
           <mat-icon>fast_rewind</mat-icon>
         </button>
-        <button
-          mat-icon-button
-          color="accent"
-          matTooltip="play"
-          (click)="play()"
-          *ngIf="this.paused"
-        >
+                <button mat-icon-button color="accent" matTooltip="play" (click)="play()" *ngIf="this.paused">
           <mat-icon>play_arrow</mat-icon>
         </button>
-        <button
-          mat-icon-button
-          color="warn"
-          matTooltip="pause"
-          (click)="pause()"
-          *ngIf="!this.paused"
-        >
+                <button mat-icon-button color="warn" matTooltip="pause" (click)="pause()" *ngIf="!this.paused">
           <mat-icon>pause</mat-icon>
         </button>
-        <button mat-icon-button matTooltip="play" (click)="speedUp()">
+                <button mat-icon-button matTooltip="play" (click)="speedUp()">
           <mat-icon>fast_forward</mat-icon>
         </button>
-      </div>
-      <div class="utilities">
-        <button
-          (click)="showNewSimulationPopup()"
-          mat-icon-button
-          matTooltip="new Simulation"
-        >
+            </div>
+            <div class="utilities">
+                <button (click)="showNewSimulationPopup()" mat-icon-button matTooltip="new Simulation">
           <mat-icon>add</mat-icon>
         </button>
-        <button
-          mat-icon-button
-          matTooltip="download"
-          *ngIf="this.simulation"
-          (click)="download()"
-        >
+                <button routerLink="/analyse" mat-icon-button matTooltip="testing">
+          test
+        </button>
+                <button mat-icon-button matTooltip="download" *ngIf="this.simulation" (click)="download()">
           <mat-icon>cloud_download</mat-icon>
         </button>
-      </div>
-    </mat-toolbar-row>
-  </mat-toolbar>
-  <div #screen class="screen"></div>
+            </div>
+        </mat-toolbar-row>
+    </mat-toolbar>
+    <div #screen class="screen"></div>
 </div>
-<p-dialog
-  header="New Simulation"
-  [(visible)]="createNewSimulationDialog"
-  [style]="{ width: '400px' }"
->
-  <div class="ui-12">
-    <form [formGroup]="simulationForm" (submit)="createNewSimulation()">
-      <mat-form-field [style]="{ width: '100%' }">
-        <mat-label>Number Of Citizens</mat-label>
-        <input
-          type="number"
-          matInput
-          formControlName="numberOfCitizens"
-          placeholder="Number Of Citizens"
-          value="100"
-        />
-        <mat-hint>Number Of Citizens</mat-hint>
-      </mat-form-field>
-      <mat-form-field [style]="{ width: '100%' }">
-        <mat-label>Ratio Of Contaminated Citizens</mat-label>
-        <input
-          type="number"
-          max="1"
-          min="0"
-          step="0.05"
-          matInput
-          formControlName="contaminatedRatio"
-          placeholder="Ratio Of Contaminated Citizens"
-        />
-        <mat-hint>Ratio Of Contaminated Citizens</mat-hint>
-      </mat-form-field>
-      <mat-form-field [style]="{ width: '100%' }">
-        <mat-label>Ratio Of Contamination</mat-label>
-        <input
-          type="number"
-          max="1"
-          min="0"
-          step="0.01"
-          matInput
-          formControlName="contaminationRatio"
-          placeholder="Ratio Of Contamination"
-        />
-        <mat-hint>Ratio Of Contamination</mat-hint>
-      </mat-form-field>
-      <mat-form-field [style]="{ width: '100%' }">
-        <mat-label>Ratio of Wearing Mask Population</mat-label>
-        <input
-          type="number"
-          max="1"
-          min="0"
-          step="0.01"
-          matInput
-          formControlName="maskRatio"
-          placeholder="Ratio of Wearing Mask Population"
-        />
-        <mat-hint>Ratio of Wearing Mask Population</mat-hint>
-      </mat-form-field>
-    </form>
+<p-dialog header="New Simulation" [(visible)]="createNewSimulationDialog" [style]="{ width: '400px' }">
     <div class="ui-12">
-      <button mat-flat-button color="primary">Reset</button>
-      <button mat-flat-button (click)="createNewSimulation()" color="accent">
+        <form [formGroup]="simulationForm" (submit)="createNewSimulation()">
+            <mat-form-field [style]="{ width: '100%' }">
+                <mat-label>Number Of Citizens</mat-label>
+                <input type="number" matInput formControlName="numberOfCitizens" placeholder="Number Of Citizens" value="100" />
+                <mat-hint>Number Of Citizens</mat-hint>
+            </mat-form-field>
+            <mat-form-field [style]="{ width: '100%' }">
+                <mat-label>Ratio Of Contaminated Citizens</mat-label>
+                <input type="number" max="1" min="0" step="0.05" matInput formControlName="contaminatedRatio" placeholder="min" />
+                <mat-hint>Ratio Of Contaminated Citizens</mat-hint>
+            </mat-form-field>
+            <mat-form-field [style]="{ width: '100%' }">
+                <mat-label>Ratio Of Contamination</mat-label>
+                <input type="number" max="1" min="0" step="0.01" matInput formControlName="contaminationRatio" placeholder="Ratio Of Contamination" />
+                <mat-hint>Ratio Of Contamination</mat-hint>
+            </mat-form-field>
+            <mat-form-field [style]="{ width: '100%' }">
+                <mat-label>Ratio of Wearing Mask Population</mat-label>
+                <input type="number" max="1" min="0" step="0.01" matInput formControlName="maskRatio" placeholder="Ratio of Wearing Mask Population" />
+                <mat-hint>Ratio of Wearing Mask Population</mat-hint>
+            </mat-form-field>
+        </form>
+        <div class="ui-12">
+            <button mat-flat-button color="primary">Reset</button>
+            <button mat-flat-button (click)="createNewSimulation()" color="accent">
         Submit
       </button>
+        </div>
     </div>
-  </div>
 </p-dialog>

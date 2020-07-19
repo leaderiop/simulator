@@ -1,27 +1,28 @@
-import { Screen } from "./screen.model";
 import { Citizen } from "./citizen.model";
 import { Quadtree } from "./quadtree.model";
 import { ContactView } from "./views/contact.view";
 import { NeighborsView } from "./views/neighbors.view";
 import { ContaminationView } from "./views/contamination.view";
-import { element } from 'protractor';
-export class Simulation {
-  private citizens: Citizen[] = [];
-  private frame = 0;
-  private framesPerSec = 100;
-  private player;
-  private contacts: ContactView[] = [];
-  private contaminations: ContaminationView[] = [];
-  constructor(private readonly screen: Screen) {}
 
+export class BackgroundSimulation {
+  public input;
+  private citizens: Citizen[] = [];
+  public currentFrame = 0;
+  public numberOfTotalFrames = 30000;
+  private contaminations: ContaminationView[] = [];
+  public status: "running" | "paused" | "finished"="paused";
+  constructor(public readonly dimension: { x: number; y: number }) {}
+
+  isFinished() {
+    return this.currentFrame > this.numberOfTotalFrames;
+  }
+  getDimension() {
+    return this.dimension;
+  }
   createPopulation(input) {
-    this.stop();
-    this.player = undefined;
-    this.contacts = [];
+    this.input = input;
     this.contaminations = [];
-    this.screen.clear();
-    let { x, y } = this.screen.getDimension();
-    console.log(input);
+    let { x, y } = this.getDimension();
     this.citizens = [...Array(input.numberOfCitizens).keys()].map(
       (id) =>
         new Citizen(x, y, {
@@ -32,16 +33,18 @@ export class Simulation {
         })
     );
   }
+
+  public getContaminated() {
+    return this.citizens.filter((citizen) => citizen.isContaminated());
+  }
   private showFrame() {
-    this.screen.clear();
-    let { x, y } = this.screen.getDimension();
+    let { x, y } = this.getDimension();
 
     let quadtree = new Quadtree(x / 2, y / 2, x / 2, y / 2);
 
     this.citizens.forEach((citizen) => {
       quadtree.add(citizen);
     });
-    quadtree.draw(this.screen);
     this.citizens.map((citizen) => citizen.move());
     this.bounce();
     let input = this.citizens.map((citizen) => citizen.getLog());
@@ -52,48 +55,34 @@ export class Simulation {
 
     this.contaminations = [
       ...this.contaminations,
-      ...this.contaminate(neighbors,this.frame),
-    ]
+      ...this.contaminate(neighbors,this.currentFrame),
+    ];
 
-    this.contacts = [...this.contacts, ...this.getFrameContacts(neighbors)];
-    neighbors.forEach((n) => {
-      if (n.citizen.isContaminated()) {
-        let color: "success" | "danger" = "success";
-        if (n.neighbors.length > 0) color = "danger";
-        this.screen.drawCercle(n.citizen.position, 40, color);
-      }
-    });
-    this.screen.show(input);
-    this.frame++;
-  }
-  show() {
-    this.showFrame();
-  }
-
-  public getContaminated() {
-    return this.citizens.filter((citizen) => citizen.isContaminated());
+    this.currentFrame++;
   }
 
   play() {
-    this.showFrame();
-    this.player = setInterval(() => this.showFrame(), this.framesPerSec);
+    if (this.status != "running") {
+      this.status = "running";
+      this.loop();
+    }
+  }
+  loop() {
+    while (this.status == "running") {
+      this.showFrame();
+      if (this.isFinished()) {
+        this.status = "finished";
+
+        this.pause();
+      }
+    }
   }
 
-  stop() {
-    clearInterval(this.player);
+
+  pause() {
+    if (!this.isFinished()) this.status = "paused";
   }
 
-  speedUp() {
-    this.stop();
-    this.framesPerSec /= 2;
-    this.play();
-  }
-
-  speedDown() {
-    this.stop();
-    this.framesPerSec *= 2;
-    this.play();
-  }
   private contaminate(neighbors: NeighborsView[],frame): ContaminationView[] {
     return neighbors
       .map((neighbor) => {
@@ -117,7 +106,7 @@ export class Simulation {
         let y = n.position.y - citizen.position.y;
         let distance = Math.sqrt(x * x + y * y);
         let contact: ContactView = {
-          frame: this.frame,
+          frame: this.currentFrame,
           citizenGuestId: n.getId(),
           citizenHostId: citizen.getId(),
           time: date,
@@ -129,14 +118,12 @@ export class Simulation {
 
     return cont.reduce((acc, tmp) => [...acc, ...tmp], []);
   }
-  getContacts() {
-    return this.contacts;
-  }
+
   getContaminations() {
     return this.contaminations;
   }
   bounce() {
-    let { x, y } = this.screen.getDimension();
+    let { x, y } = this.getDimension();
     this.citizens
       .filter((citizen) => {
         let position = citizen.getLog().position;
@@ -150,5 +137,15 @@ export class Simulation {
         } else return false;
       })
       .map((citizen) => citizen.bounce());
+  }
+
+  setMaxFrames(n: number) {
+    this.numberOfTotalFrames = n;
+    if (!this.isFinished()) {
+      this.status = "paused";
+    }
+  }
+  getMaxFrames(): number {
+    return this.numberOfTotalFrames;
   }
 }
