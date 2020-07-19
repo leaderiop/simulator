@@ -130,5 +130,8 @@
       }
     }
   },
-  "defaultProject": "simulator"
+  "defaultProject": "simulator",
+  "cli": {
+    "analytics": false
+  }
 }
