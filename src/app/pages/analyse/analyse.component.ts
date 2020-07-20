@@ -31,7 +31,9 @@ export class AnalyseComponent implements OnInit {
     simulation: BackgroundSimulation;
   }[] = [];
   backgroundsimulationForm = this.fb.group({
-    numberOfCitizens: [25],
+    numberOfCitizensMin: [5],
+    numberOfCitizensMax: [100],
+    numberOfCitizensStep: [10],
     contaminatedRatioMin: [0.1],
     contaminatedRatioMax: [1],
     contaminatedRatioStep: [0.1],
@@ -41,7 +43,7 @@ export class AnalyseComponent implements OnInit {
     maskRatioMin: [0.1],
     maskRatioMax: [1],
     maskRatioStep: [0.1],
-  });
+      });
   displayedColumns: string[] = [
     "no",
     "numberOfCitizens",
@@ -67,9 +69,17 @@ export class AnalyseComponent implements OnInit {
   createTest() {
     this.createNewSimulationDialog = false;
     for (
+      let p =
+        this.backgroundsimulationForm.controls.numberOfCitizensMin.value ;
+      p <=
+      this.backgroundsimulationForm.controls.numberOfCitizensMax.value;
+      p +=
+        this.backgroundsimulationForm.controls.numberOfCitizensStep.value
+    ){
+    for (
       let i =
         this.backgroundsimulationForm.controls.contaminatedRatioMin.value * 100;
-      i <
+      i <=
       this.backgroundsimulationForm.controls.contaminatedRatioMax.value * 100;
       i +=
         this.backgroundsimulationForm.controls.contaminatedRatioStep.value * 100
@@ -78,7 +88,7 @@ export class AnalyseComponent implements OnInit {
         let j =
           this.backgroundsimulationForm.controls.contaminationRatioMin.value *
           100;
-        j <
+        j <=
         this.backgroundsimulationForm.controls.contaminationRatioMax.value *
           100;
         j +=
@@ -88,21 +98,20 @@ export class AnalyseComponent implements OnInit {
         for (
           let k =
             this.backgroundsimulationForm.controls.maskRatioMin.value * 100;
-          k < this.backgroundsimulationForm.controls.maskRatioMax.value * 100;
+          k <= this.backgroundsimulationForm.controls.maskRatioMax.value * 100;
           k += this.backgroundsimulationForm.controls.maskRatioStep.value * 100
         ) {
           let simulationInput: SimulationInput = {
             contaminatedRatio: i / 100,
             contaminationRatio: j / 100,
             maskRatio: k / 100,
-            numberOfCitizens: this.backgroundsimulationForm.controls
-              .numberOfCitizens.value,
+            numberOfCitizens: p,
           };
           this.createNewSimulation(simulationInput);
         }
       }
     }
-
+  }
     console.log(this.simulations);
   }
   createNewSimulation(simulationInput: SimulationInput) {
@@ -189,4 +198,7 @@ export class AnalyseComponent implements OnInit {
       this.count--;
     }
   }
+
+
+
 }

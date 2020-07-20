@@ -80,11 +80,21 @@
 <p-dialog header="New Simulation" [(visible)]="createNewSimulationDialog" [style]="{ width: '400px' }">
     <div class="ui-12">
         <form [formGroup]="backgroundsimulationForm" (submit)="createTest()">
-            <mat-form-field [style]="{ width: '100%' }">
-                <mat-label>Number Of Citizens</mat-label>
-                <input type="number" matInput formControlName="numberOfCitizens" placeholder="Number Of Citizens" value="100" />
-                <mat-hint>Number Of Citizens</mat-hint>
-            </mat-form-field>
+            <mat-label>Number Of Citizens</mat-label>
+            <div class="row">
+                <mat-form-field [style]="{ width: '30%' }">
+                    <input type="number" step="1" matInput formControlName="numberOfCitizensMin" placeholder="min" />
+                    <mat-hint>min</mat-hint>
+                </mat-form-field>
+                <mat-form-field [style]="{ width: '30%' }">
+                    <input type="number" step="1" matInput formControlName="numberOfCitizensMax" placeholder="max" />
+                    <mat-hint>max</mat-hint>
+                </mat-form-field>
+                <mat-form-field [style]="{ width: '30%' }">
+                    <input type="number" matInput formControlName="numberOfCitizensStep" placeholder="Step" />
+                    <mat-hint>Step</mat-hint>
+                </mat-form-field>
+            </div>
             <mat-label>Ratio Of Contaminated Citizens</mat-label>
             <div class="row">
                 <mat-form-field [style]="{ width: '30%' }">
